@@ -22,6 +22,18 @@ class StardustXmlUtil {
         return chunk;
     }
 
+    static Element createLink(String topicId, String text, String anchor, String origin, Document doc){
+        Element link = doc.createElement("a");
+        if (origin != null && !origin.isEmpty())
+            link.setAttribute("origin", origin);
+        if (anchor != null && !anchor.isEmpty())
+            link.setAttribute("anchor", anchor);
+        link.setAttribute("href", topicId + ".xml");
+        if(text != null && !text.isEmpty())
+            link.appendChild(doc.createTextNode(text));
+        return link;
+    }
+
     static Document createTopic(String topicId, String topicTitle){
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
@@ -56,6 +68,12 @@ class StardustXmlUtil {
         } catch (javax.xml.transform.TransformerException e) {
             e.printStackTrace();
         }
+    }
+
+    static void saveTopicToFile(Document topic){
+        String path = StardustUtil.getRiderDocPath() + "\\topics\\Generated\\" +
+                topic.getDocumentElement().getAttribute("id") + ".xml";
+        saveXmlDocumentToFile(topic, path);
     }
 
 }

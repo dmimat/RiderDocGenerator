@@ -129,8 +129,8 @@ public class DumpMainMenuActionsAction extends AnAction {
 //            topic.getDocumentElement().appendChild(chunk);
 //      }
 
-        StardustXmlUtil.saveXmlDocumentToFile(topic,"C:\\Temp\\Menupath_by_ID.xml");
-        StardustXmlUtil.saveXmlDocumentToFile(introTopic,"C:\\Temp\\AccessIntro_by_ID.xml");
+        StardustXmlUtil.saveTopicToFile(topic);
+        StardustXmlUtil.saveTopicToFile(introTopic);
     }
 
     private static Map<String, String> getMenuPathList(List<Object[]> paths, ActionManagerEx actionManager){
