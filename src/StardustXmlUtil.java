@@ -64,7 +64,7 @@ class StardustXmlUtil {
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(new File(path));
             transformer.transform(source, result);
-            System.out.println("File saved!");
+            System.out.println("XML file generated at " + path);
         } catch (javax.xml.transform.TransformerException e) {
             e.printStackTrace();
         }

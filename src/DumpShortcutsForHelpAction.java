@@ -113,7 +113,13 @@ public class DumpShortcutsForHelpAction extends AnAction {
                 Element tr = topic.createElement("tr");
                 Element td1 = topic.createElement("td");
                 AnAction action = actionManager.getAction(actionId);
-                String text = action.getTemplatePresentation().getText();
+                String text = null;
+                try {
+                    text = action.getTemplatePresentation().getText();
+                } catch (Exception e) {
+                    System.out.println("Action '" + actionId + "' doesn't exist");
+                    throw e;
+                }
                 if (text == null || text.isEmpty()) text = actionId;
                 Element link =
                         StardustXmlUtil.createLink(actionElement.getAttribute("topic"),
@@ -131,6 +137,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
                     Shortcut[] shortcuts = keymap.getShortcuts(actionId);
 
                     td2.setAttribute("filter", keymapId);
+                    td2.setAttribute("width", "25%");
                     for (Shortcut shortcut : shortcuts)
                         addShortcut(
                                 StardustUtil.normalizeShortcutKeys(
@@ -146,7 +153,17 @@ public class DumpShortcutsForHelpAction extends AnAction {
                     }
                 }
                 if(!trFilters.isEmpty())
+                {
+                    trFilters += ",switchable";
                     tr.setAttribute("filter", trFilters);
+                    Element shortcutSw = topic.createElement("shortcut");
+                    shortcutSw.setAttribute("key", actionId);
+                    Element td3 = topic.createElement("td");
+                    td3.appendChild(shortcutSw);
+                    td3.setAttribute("filter", "switchable");
+                    td3.setAttribute("width", "25%");
+                    tr.appendChild(td3);
+                }
                 chunk.appendChild(tr);
             }
             topic.getDocumentElement().appendChild(chunk);
