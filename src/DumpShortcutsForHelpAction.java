@@ -3,24 +3,18 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
-import com.intellij.openapi.fileChooser.FileChooser;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.lang.reflect.Array;
-import java.util.*;
 
 /**
  * Created by Dmitry.Matveev on 26-Jan-17.
@@ -68,7 +62,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
                     Element shortCutElement = doc.createElement("Shortcut");
                     shortCutElement.setAttribute("layout", keymap.getName());
                     shortCutElement.setTextContent(
-                            StardustUtil.normalizeShortcutKeys(KeymapUtil.getShortcutText(shortcut),keymapId));
+                            StardustUtil.normalizeShortcutKeys(KeymapUtil.getShortcutText(shortcut), keymapId));
                     actionElement.appendChild(shortCutElement);
                 }
             }
@@ -114,13 +108,19 @@ public class DumpShortcutsForHelpAction extends AnAction {
                 Element td1 = topic.createElement("td");
                 AnAction action = actionManager.getAction(actionId);
                 String text = null;
-                try {
-                    text = action.getTemplatePresentation().getText();
-                } catch (Exception e) {
-                    System.out.println("Action '" + actionId + "' doesn't exist");
-                    throw e;
+                String hardText = actionElement.getAttribute("text");
+                if (hardText != null && !hardText.isEmpty())
+                    text = hardText;
+                else {
+                    try {
+                        text = action.getTemplatePresentation().getText();
+                    } catch (Exception e) {
+                        System.out.println("Action '" + actionId + "' doesn't exist");
+                        throw e;
+                    }
                 }
                 if (text == null || text.isEmpty()) text = actionId;
+
                 Element link =
                         StardustXmlUtil.createLink(actionElement.getAttribute("topic"),
                                 text, actionElement.getAttribute("anchor"),
@@ -141,19 +141,18 @@ public class DumpShortcutsForHelpAction extends AnAction {
                     for (Shortcut shortcut : shortcuts)
                         addShortcut(
                                 StardustUtil.normalizeShortcutKeys(
-                                        KeymapUtil.getShortcutText(shortcut),keymapId), td2, topic);
+                                        KeymapUtil.getShortcutText(shortcut), keymapId), td2, topic);
                     String hardShortcut = actionElement.getAttribute("shortcut");
                     if (hardShortcut != null && !hardShortcut.isEmpty())
                         addShortcut(StardustUtil.normalizeShortcutKeys(hardShortcut, keymapId), td2, topic);
                     tr.appendChild(td2);
-                    if(td2.hasChildNodes()){
-                        if(!trFilters.isEmpty())
-                            trFilters +=",";
+                    if (td2.hasChildNodes()) {
+                        if (!trFilters.isEmpty())
+                            trFilters += ",";
                         trFilters += keymapId;
                     }
                 }
-                if(!trFilters.isEmpty())
-                {
+                if (!trFilters.isEmpty()) {
                     trFilters += ",switchable";
                     tr.setAttribute("filter", trFilters);
                     Element shortcutSw = topic.createElement("shortcut");
@@ -171,7 +170,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
         StardustXmlUtil.saveTopicToFile(topic);
     }
 
-    private void addShortcut(String text ,Element parent, Document topic){
+    private void addShortcut(String text, Element parent, Document topic) {
         Element shortcutEl = topic.createElement("shortcut");
         shortcutEl.setTextContent(text);
         parent.appendChild(shortcutEl);
