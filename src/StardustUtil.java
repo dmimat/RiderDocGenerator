@@ -24,18 +24,37 @@ public class StardustUtil {
     }
 
     public static String normalizeShortcutKeys(String shortcut, String keymap) {
+        String normalized = shortcut;
+
+        Map<String, String> replacements = new HashMap<String, String>() {{
+            put("Button1 Click", "Click");
+            put("Button2 Click", "Right-click");
+            put("+Back Slash", "+\\");
+            put("+Slash", "+/");
+            put("Open Bracket", "[");
+            put("Close Bracket", "]");
+            put("Comma", ",");
+            put("+NumPad -", "+NumPad Minus");
+            put("Button4 Click", "Mouse Back");
+            put("Button5 Click", "Mouse Forward");
+            put("Back Quote", "'");
+        }};
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            normalized = normalized.replace(entry.getKey(), entry.getValue());
+        }
+
         if (Objects.equals(keymap, "Visual Studio") ||
                 Objects.equals(keymap, "ReSharper") ||
-                Objects.equals(keymap, "Rider")) return shortcut;
+                Objects.equals(keymap, "Rider")) return normalized;
 
-        String normalized = shortcut;
-        Map<String, String> replacements = new HashMap<String, String>() {{
+
+        Map<String, String> replacementsIos = new HashMap<String, String>() {{
             put("Shift", "⇧");
             put("Ctrl", "^");
             put("Meta", "⌘");
             put("Alt", "⌥");
         }};
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+        for (Map.Entry<String, String> entry : replacementsIos.entrySet()) {
             normalized = normalized.replace(entry.getKey(), entry.getValue());
         }
         return normalized;

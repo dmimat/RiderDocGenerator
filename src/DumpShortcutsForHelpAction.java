@@ -68,7 +68,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
             }
         }
 
-        StardustXmlUtil.saveXmlDocumentToFile(doc, "C:\\Temp\\keymap.xml");
+        StardustXmlUtil.saveXmlDocumentToFile(doc,StardustUtil.getRiderDocPath() + "\\keymap.xml");
 
         createKeymaps(activeKeymapIds, registeredActionIds, e.getProject(), actionManager);
     }
