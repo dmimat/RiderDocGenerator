@@ -38,6 +38,8 @@ public class StardustUtil {
             put("Button4 Click", "Mouse Back");
             put("Button5 Click", "Mouse Forward");
             put("Back Quote", "'");
+            put("Semicolon", ";");
+            put("Equals", "=");
         }};
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
             normalized = normalized.replace(entry.getKey(), entry.getValue());

@@ -35,6 +35,7 @@
       <add-to-group group-id="MainMenu" anchor="last"  />
       <action id="RiderDocGenerator.DumpShortcutsForHelpAction" class="DumpShortcutsForHelpAction" text="Export shortcuts for help" />
       <action id="RiderDocGenerator.DumpMainMenuActionsAction" class="DumpMainMenuActionsAction" text="Export main menu actions" />
+      <action id="RiderDocGenerator.DumpBundledPlugins" class="DumpBundledPlugins" text="Export bundled plugins" />
       <!--<action id="RiderDocGenerator.Dialogs" class="ShortcutsAction" text="Show _Dialog" description="A test menu item" />-->
     </group>
   </actions>

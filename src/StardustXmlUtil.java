@@ -1,3 +1,4 @@
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -44,6 +45,7 @@ class StardustXmlUtil {
         }
 
         Document doc = docBuilder.newDocument();
+        Comment comment = doc.createComment("This topic was generated automatically with the Rider Documentation Generator plugin.");
         Element rootElement = doc.createElement("topic");
         rootElement.setAttribute("xsi:noNamespaceSchemaLocation",
                 "http://helpserver.labs.intellij.net/help/topic.v2.xsd");
@@ -51,6 +53,7 @@ class StardustXmlUtil {
                 "http://www.w3.org/2001/XMLSchema-instance");
         rootElement.setAttribute("id", topicId);
         rootElement.setAttribute("title", topicTitle);
+        rootElement.appendChild(comment);
         doc.appendChild(rootElement);
         return doc;
     }

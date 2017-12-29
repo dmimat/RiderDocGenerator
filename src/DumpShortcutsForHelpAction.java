@@ -116,7 +116,6 @@ public class DumpShortcutsForHelpAction extends AnAction {
                         text = action.getTemplatePresentation().getText();
                     } catch (Exception e) {
                         System.out.println("Action '" + actionId + "' doesn't exist");
-                        throw e;
                     }
                 }
                 if (text == null || text.isEmpty()) text = actionId;
