@@ -23,10 +23,10 @@ class StardustXmlUtil {
         return chunk;
     }
 
-    static Element createLink(String topicId, String text, String anchor, String origin, Document doc){
+    static Element createLink(String topicId, String text, String anchor, Document doc){
         Element link = doc.createElement("a");
-        if (origin != null && !origin.isEmpty())
-            link.setAttribute("origin", origin);
+        /*if (origin != null && !origin.isEmpty())
+            link.setAttribute("origin", origin);*/
         if (anchor != null && !anchor.isEmpty())
             link.setAttribute("anchor", anchor);
         link.setAttribute("href", topicId + ".xml");

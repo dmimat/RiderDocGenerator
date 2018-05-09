@@ -1,8 +1,10 @@
 
+import com.intellij.codeInspection.LocalInspectionEP;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
+import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
@@ -123,7 +125,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
                 Element link =
                         StardustXmlUtil.createLink(actionElement.getAttribute("topic"),
                                 text, actionElement.getAttribute("anchor"),
-                                actionElement.getAttribute("origin"),
+                                //actionElement.getAttribute("origin"),
                                 topic);
                 td1.appendChild(link);
                 tr.appendChild(td1);

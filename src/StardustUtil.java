@@ -23,6 +23,10 @@ public class StardustUtil {
         return riderDocPath;
     }
 
+    public static String normalizeForFileName(String s){
+        return s.replaceAll("\\W+", "_");
+    }
+
     public static String normalizeShortcutKeys(String shortcut, String keymap) {
         String normalized = shortcut;
 
