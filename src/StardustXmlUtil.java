@@ -73,10 +73,11 @@ class StardustXmlUtil {
         }
     }
 
-    static void saveTopicToFile(Document topic){
-        String path = StardustUtil.getRiderDocPath() + "\\topics\\Generated\\" +
-                topic.getDocumentElement().getAttribute("id") + ".xml";
-        saveXmlDocumentToFile(topic, path);
+    static void saveTopicToFile(Document topic, String subfolder){
+        String mainPath = StardustUtil.getRiderDocPath() + "\\topics\\Generated\\";
+        if (subfolder != null)
+            mainPath = mainPath + subfolder + "\\";
+        saveXmlDocumentToFile(topic, mainPath + topic.getDocumentElement().getAttribute("id") + ".xml");
     }
 
 }

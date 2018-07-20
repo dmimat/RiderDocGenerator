@@ -129,8 +129,8 @@ public class DumpMainMenuActionsAction extends AnAction {
 //            topic.getDocumentElement().appendChild(chunk);
 //      }
 
-        StardustXmlUtil.saveTopicToFile(topic);
-        StardustXmlUtil.saveTopicToFile(introTopic);
+        StardustXmlUtil.saveTopicToFile(topic, null);
+        StardustXmlUtil.saveTopicToFile(introTopic, null);
     }
 
     private static Map<String, String> getMenuPathList(List<Object[]> paths, ActionManagerEx actionManager){

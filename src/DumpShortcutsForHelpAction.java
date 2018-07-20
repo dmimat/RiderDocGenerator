@@ -168,7 +168,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
             }
             topic.getDocumentElement().appendChild(chunk);
         }
-        StardustXmlUtil.saveTopicToFile(topic);
+        StardustXmlUtil.saveTopicToFile(topic, null);
     }
 
     private void addShortcut(String text, Element parent, Document topic) {
