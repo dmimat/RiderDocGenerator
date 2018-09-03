@@ -23,8 +23,8 @@ import java.io.File;
  */
 public class DumpShortcutsForHelpAction extends AnAction {
 
-    public static final String[] activeKeymapIds = new String[]{"Visual Studio", "ReSharper", "Rider",
-            "Visual Studio OSX", "ReSharper OSX", "Rider OSX"};
+    public static final String[] activeKeymapIds = new String[]{"Visual Studio", "ReSharper", "$default",
+            "Visual Studio OSX", "ReSharper OSX", "Mac OS X 10.5+"};
 
     @Override
     public void actionPerformed(AnActionEvent e) {

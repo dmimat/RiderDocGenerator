@@ -42,7 +42,8 @@ public class StardustUtil {
             put("Button4 Click", "Mouse Back");
             put("Button5 Click", "Mouse Forward");
             put("Back Quote", "'");
-            put("Semicolon", ";");
+            put(";", "Semicolon");
+//            put("Semicolon", ";");
             put("Equals", "=");
         }};
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
@@ -51,7 +52,7 @@ public class StardustUtil {
 
         if (Objects.equals(keymap, "Visual Studio") ||
                 Objects.equals(keymap, "ReSharper") ||
-                Objects.equals(keymap, "Rider")) return normalized;
+                Objects.equals(keymap, "$default")) return normalized;
 
 
         Map<String, String> replacementsIos = new HashMap<String, String>() {{
