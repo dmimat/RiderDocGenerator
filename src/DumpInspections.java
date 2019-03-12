@@ -3,16 +3,13 @@ import com.intellij.codeInspection.ex.InspectionToolRegistrar;
 import com.intellij.codeInspection.ex.InspectionToolWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.jsoup.Jsoup;
+import org.jsoup.helper.W3CDom;
+import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,12 +21,32 @@ public class DumpInspections extends AnAction {
 
         Map<String, LangContainer> map = new HashMap<>();
 
+        String inspections_tree_id = "product_inspections";
+        Document inspectionTree = StardustXmlUtil.createXmlDocument();
+
+        Comment comment = inspectionTree.createComment("This file was generated automatically with the Documentation Generator plugin.");
+        Element rootElement = inspectionTree.createElement("product-profile");
+        rootElement.setAttribute("id", inspections_tree_id);
+        rootElement.setAttribute("name","product inspections");
+        rootElement.appendChild(comment);
+        inspectionTree.appendChild(rootElement);
+
+        Element rootTocElement = inspectionTree.createElement("toc-element");
+        rootTocElement.setAttribute("include-id", "code_inspection_reference");
+        rootTocElement.setAttribute("hidden", "true");
+
+        Element refPagesElement = inspectionTree.createElement("toc-element");
+        refPagesElement.setAttribute("toc-title", "Code Inspection Index");
+        refPagesElement.setAttribute("include-id", "code_inspection_reference");
+        refPagesElement.setAttribute("sort-children", "ascending");
+
         for (InspectionToolWrapper wrapper : InspectionToolRegistrar.getInstance().createTools()) {
+
+            if (wrapper.loadDescription() == null) continue;
 
             InspectionEP ep = wrapper.getExtension();
 
-            if (ep.isInternal)
-                continue;
+            if (ep.isInternal) continue;
 
             String languageKey = ep.groupPath;
             if (languageKey == null)
@@ -38,10 +55,11 @@ public class DumpInspections extends AnAction {
                 map.put(languageKey, new LangContainer(languageKey));
             }
 
+
             String text = ep.displayName;
             LangContainer container = map.get(languageKey);
             Document topic = container.doc;
-            Node newNode = topic.createTextNode("");
+            Node descriptionNode = topic.createTextNode("");
 
             String description =  wrapper.loadDescription().trim();
             if (!description.startsWith("<"))
@@ -58,37 +76,66 @@ public class DumpInspections extends AnAction {
             description = description.replaceAll("</tt>", "</code>");
             description = description.replaceAll("&(?!.{0,3};)", "&amp;");
 
+            String inspectionTopicId = StardustUtil.normalizeForFileName(languageKey + "_" + text);
 
             try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document doc = db.parse(new ByteArrayInputStream(description.getBytes("UTF-8")));
-
+                org.jsoup.nodes.Document jsoupdoc = Jsoup.parse(description);
+                W3CDom w3cDom = new W3CDom();
+                org.w3c.dom.Document doc = w3cDom.fromJsoup(jsoupdoc);
                 NodeList nodes = doc.getElementsByTagName("body");
-                newNode = nodes.item(0).cloneNode(true);
-                topic.adoptNode(newNode);
-                topic.renameNode(newNode, null, "p");
-                //text = text + nodes.item(0).getTextContent();
+                descriptionNode = nodes.item(0).cloneNode(true);
+                topic.adoptNode(descriptionNode);
+                topic.renameNode(descriptionNode, null, "p");
+                createTopicForInspection(nodes.item(0).cloneNode(true), inspectionTopicId, text);
 
-                //text = text;
+                Element inspectionTocElement = inspectionTree.createElement("toc-element");
+                inspectionTocElement.setAttribute("id", inspectionTopicId + ".xml");
+                rootTocElement.appendChild(inspectionTocElement);
+
             } catch (Exception e) {
                 e.printStackTrace();
+                descriptionNode = topic.createComment(
+                        "Problems in the inspection description: " + e.getLocalizedMessage());
+                topic.adoptNode(descriptionNode);
             }
 
-
-            addTableRowThreeCol(topic, container.table, text, newNode, getSeverityLink(ep, topic));
-
-//            InspectionProfileEntry entry = ep.instantiateTool();
-//            String description = entry.loadDescription();
-
-            String x = "fdasfa";
+            Node inspectionTextWithLink =
+                    StardustXmlUtil.createLink(inspectionTopicId, text, null, topic, true);
+            addTableRowThreeCol(
+                    topic, container.table, inspectionTextWithLink, descriptionNode, getSeverityLink(ep, topic));
         }
+
+
 
         for (LangContainer container : map.values()) {
             StardustXmlUtil.saveTopicToFile(container.doc, "Inspections");
+
+            Element inspectionRefElement = inspectionTree.createElement("toc-element");
+            inspectionRefElement.setAttribute("id", container.getTopicId() + ".xml");
+            refPagesElement.appendChild(inspectionRefElement);
         }
 
+        inspectionTree.getDocumentElement().appendChild(refPagesElement);
+        inspectionTree.getDocumentElement().appendChild(rootTocElement);
+        StardustXmlUtil.saveXmlDocumentToFile(
+                inspectionTree,StardustUtil.getRiderDocPath() + "\\" + inspections_tree_id + ".tree");
     }
+
+    private void createTopicForInspection(Node content, String topicId, String name){
+        Document doc = StardustXmlUtil.createTopic(topicId, "Code Inspection: " + name);
+        doc.getDocumentElement().appendChild(
+                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", "inspection_header", doc, false));
+        doc.adoptNode(content);
+        doc.renameNode(content, null, "p");
+        doc.getDocumentElement().appendChild(content);
+        doc.getDocumentElement().appendChild(
+                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", topicId, doc, true));
+        doc.getDocumentElement().appendChild(
+                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", "inspection_footer", doc, false));
+
+        StardustXmlUtil.saveTopicToFile(doc, "Inspections\\InspectionTopics");
+    }
+
 
     private class LangContainer {
         String languageKey;
@@ -97,12 +144,15 @@ public class DumpInspections extends AnAction {
 
         LangContainer(String languageKey) {
             this.languageKey = languageKey;
-            this.doc = StardustXmlUtil.createTopic("Code_Inspections_in_" + StardustUtil.normalizeForFileName(languageKey),
-                    "Code Inspections in " + languageKey);
+            this.doc = StardustXmlUtil.createTopic(getTopicId(),"Code Inspections in " + languageKey);
             table = doc.createElement("table");
-            addTableRowThreeCol(doc, table, "Inspection", doc.createTextNode("Description"),
+            addTableRowThreeCol(doc, table, doc.createTextNode("Inspection"), doc.createTextNode("Description"),
                     doc.createTextNode("Default Severity"));
             doc.getDocumentElement().appendChild(table);
+        }
+
+        public String getTopicId(){
+            return "Code_Inspections_in_" + StardustUtil.normalizeForFileName(languageKey);
         }
     }
 
@@ -110,10 +160,10 @@ public class DumpInspections extends AnAction {
 //        addTableRowTwoCol(doc, table, doc.createTextNode(left), right);
 //    }
 
-    private void addTableRowThreeCol(Document doc, Element table, String left, Node middle, Node right) {
+    private void addTableRowThreeCol(Document doc, Element table, Node left, Node middle, Node right) {
         Element tr = doc.createElement("tr");
         Element tdLeft = doc.createElement("td");
-        tdLeft.appendChild(doc.createTextNode(left));
+        tdLeft.appendChild(left);
         Element tdMiddle = doc.createElement("td");
         tdMiddle.appendChild(middle);
         Element tdRight = doc.createElement("td");
@@ -141,16 +191,15 @@ public class DumpInspections extends AnAction {
         if (inspection == null || inspection.level == null)
             return doc.createTextNode("");
         if (!inspection.enabledByDefault)
-            return StardustXmlUtil.createLink("Code_Analysis__Configuring_Warnings", "Disabled", "disable", doc);
+            return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_disabled", doc, false);
         if (inspection.level.equals("ERROR"))
-            return StardustXmlUtil.createLink("Code_Analysis__Code_Inspections", "Error", "errors", doc);
+        return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_error", doc, false);
         if (inspection.level.equals("WARNING"))
-            return StardustXmlUtil.createLink("Code_Analysis__Code_Inspections", "Warning", "warnings", doc);
+            return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_warning", doc, false);
         if (inspection.level.equals("WEAK WARNING"))
-            return StardustXmlUtil.createLink("Code_Analysis__Code_Inspections", "Weak warning", "warnings", doc);
+            return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_weak_warning", doc, false);
         if (inspection.level.equals("INFORMATION"))
-            return StardustXmlUtil.createLink("Code_Analysis__Code_Inspections", "Information", "hints", doc);
-
+            return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_information", doc, false);
         return doc.createTextNode("");
     }
 

@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Created by Dmitry.Matveev on 26-Jan-17.
@@ -31,17 +32,9 @@ public class DumpShortcutsForHelpAction extends AnAction {
 
         ActionManagerEx actionManager = ActionManagerEx.getInstanceEx();
         String[] registeredActionIds = actionManager.getActionIds("");
+        Arrays.sort(registeredActionIds);
 
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = null;
-        try {
-            docBuilder = docFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException exception) {
-            exception.printStackTrace();
-        }
-
-
-        Document doc = docBuilder.newDocument();
+        Document doc = StardustXmlUtil.createXmlDocument();
         Element rootElement = doc.createElement("Keymap");
         doc.appendChild(rootElement);
 
@@ -126,7 +119,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
                         StardustXmlUtil.createLink(actionElement.getAttribute("topic"),
                                 text, actionElement.getAttribute("anchor"),
                                 //actionElement.getAttribute("origin"),
-                                topic);
+                                topic, false);
                 td1.appendChild(link);
                 tr.appendChild(td1);
 

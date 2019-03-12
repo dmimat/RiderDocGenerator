@@ -1,29 +1,28 @@
-<idea-plugin version="2">
+<idea-plugin>
   <id>com.jetbrains</id>
   <name>Rider documentation generator</name>
   <version>1.0</version>
   <vendor email="dmitry.matveev@jetbrains.com" url="https://jetpeople.jetbrains.com/profile/1228/Dmitry.Matveev">Dmitry Matveev</vendor>
 
-  <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
-    ]]></description>
+  <description>
+    This plugin dumps various product details to be used in online help.
+  </description>
 
-  <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-    ]]>
+  <change-notes>
+    Make the plugin work for different IntelliJ-platform products
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="141.0"/>
+  <depends>com.intellij.modules.platform</depends>
+
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
   <!-- uncomment to enable plugin in all products
   <depends>com.intellij.modules.lang</depends>
   -->
-  <depends>com.intellij.modules.rider</depends>
+  <!--<depends>com.intellij.modules.rider</depends>-->
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
