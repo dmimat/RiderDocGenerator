@@ -19,7 +19,7 @@ class StardustXmlUtil {
 
     static Element createChunk(String includeId, Document doc){
         Element chunk = doc.createElement("chunk");
-        chunk.setAttribute("include-id", includeId);
+        chunk.setAttribute("id", includeId);
         return chunk;
     }
 

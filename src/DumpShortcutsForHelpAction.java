@@ -36,6 +36,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
 
         Document doc = StardustXmlUtil.createXmlDocument();
         Element rootElement = doc.createElement("Keymap");
+        rootElement.setAttribute("id", "rdr");
         doc.appendChild(rootElement);
 
         for (String id : registeredActionIds) {
@@ -45,8 +46,11 @@ public class DumpShortcutsForHelpAction extends AnAction {
             if (text == null || text.isEmpty()) text = id;
             Element actionElement = doc.createElement("Action");
             actionElement.setAttribute("id", id);
-            actionElement.setAttribute("title", text);
             rootElement.appendChild(actionElement);
+
+            Element descriptionElement = doc.createElement("Description");
+            descriptionElement.setTextContent(text);
+            actionElement.appendChild(descriptionElement);
 
             for (String keymapId : activeKeymapIds) {
                 Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
