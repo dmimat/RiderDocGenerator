@@ -44,19 +44,13 @@ public class DumpInspections extends AnAction {
 
             if (wrapper.loadDescription() == null) continue;
 
-            InspectionEP ep = wrapper.getExtension();
-
-            if (ep.isInternal) continue;
-
-            String languageKey = ep.groupPath;
-            if (languageKey == null)
-                languageKey = ep.groupDisplayName;
+            String languageKey = wrapper.getGroupPath()[0];
             if (!map.containsKey(languageKey)) {
                 map.put(languageKey, new LangContainer(languageKey));
             }
 
 
-            String text = ep.displayName;
+            String text = wrapper.getDisplayName();
             LangContainer container = map.get(languageKey);
             Document topic = container.doc;
             Node descriptionNode = topic.createTextNode("");
@@ -102,7 +96,7 @@ public class DumpInspections extends AnAction {
             Node inspectionTextWithLink =
                     StardustXmlUtil.createLink(inspectionTopicId, text, null, topic, true);
             addTableRowThreeCol(
-                    topic, container.table, inspectionTextWithLink, descriptionNode, getSeverityLink(ep, topic));
+                    topic, container.table, inspectionTextWithLink, descriptionNode, getSeverityLink(wrapper, topic));
         }
 
 
@@ -187,18 +181,18 @@ public class DumpInspections extends AnAction {
 
 
 
-    private static Node getSeverityLink(InspectionEP inspection, Document doc) {
-        if (inspection == null || inspection.level == null)
+    private static Node getSeverityLink(InspectionToolWrapper wrapper, Document doc) {
+        if (wrapper == null)
             return doc.createTextNode("");
-        if (!inspection.enabledByDefault)
+        if (!wrapper.isEnabledByDefault())
             return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_disabled", doc, false);
-        if (inspection.level.equals("ERROR"))
+        if (wrapper.getDefaultLevel().getName().equals("ERROR"))
         return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_error", doc, false);
-        if (inspection.level.equals("WARNING"))
+        if (wrapper.getDefaultLevel().getName().equals("WARNING"))
             return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_warning", doc, false);
-        if (inspection.level.equals("WEAK WARNING"))
+        if (wrapper.getDefaultLevel().getName().equals("WEAK WARNING"))
             return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_weak_warning", doc, false);
-        if (inspection.level.equals("INFORMATION"))
+        if (wrapper.getDefaultLevel().getName().equals("INFORMATION"))
             return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_information", doc, false);
         return doc.createTextNode("");
     }

@@ -30,7 +30,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <group id="RiderDocGenerator.Menu" text="Rider Doc Generator" description="Rider Doc Generator">
+    <group id="RiderDocGenerator.Menu" text="Help Content Generator" description="Help Content Generator">
       <add-to-group group-id="MainMenu" anchor="last"  />
       <action id="RiderDocGenerator.DumpShortcutsForHelpAction" class="DumpShortcutsForHelpAction" text="Export shortcuts for help" />
       <action id="RiderDocGenerator.DumpMainMenuActionsAction" class="DumpMainMenuActionsAction" text="Export main menu actions" />
