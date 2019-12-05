@@ -187,7 +187,7 @@ public class DumpInspections extends AnAction {
         if (!wrapper.isEnabledByDefault())
             return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_disabled", doc, false);
         if (wrapper.getDefaultLevel().getName().equals("ERROR"))
-        return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_error", doc, false);
+            return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_error", doc, false);
         if (wrapper.getDefaultLevel().getName().equals("WARNING"))
             return StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml","severity_warning", doc, false);
         if (wrapper.getDefaultLevel().getName().equals("WEAK WARNING"))

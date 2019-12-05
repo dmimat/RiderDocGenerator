@@ -3,6 +3,8 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -56,10 +58,10 @@ public class StardustUtil {
 
 
         Map<String, String> replacementsIos = new HashMap<String, String>() {{
-            put("Shift", "⇧");
-            put("Ctrl", "^");
-            put("Meta", "⌘");
-            put("Alt", "⌥");
+            put("Shift", Character.toString((char)8679)); // ⇧
+            put("Ctrl", Character.toString((char)8963)); // ⌃
+            put("Meta", Character.toString((char)8984)); // ⌘
+            put("Alt", Character.toString((char)8997)); // ⌥
         }};
         for (Map.Entry<String, String> entry : replacementsIos.entrySet()) {
             normalized = normalized.replace(entry.getKey(), entry.getValue());

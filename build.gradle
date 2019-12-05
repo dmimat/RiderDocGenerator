@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.14'
+}
+
+apply plugin: 'org.jetbrains.intellij'
+
+group 'RiderDocGenerator'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven{ url 'https://www.jetbrains.com/intellij-repository/snapshots/'}
+    maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
+}
+
+intellij {
+    type 'RD'
+    // Download a version of Rider to compile and run with. Either set `version` to
+    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
+    // This will download from www.jetbrains.com/intellij-repository/snapshots or
+    // www.jetbrains.com/intellij-repository/releases, respectively.
+    //version = "LATEST-EAP-SNAPSHOT"
+    // Sources aren't available for Rider
+    version '2019.3-EAP7-SNAPSHOT'
+    pluginName 'RiderDocGenerator'
+}
+
+instrumentCode {
+    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
+}
+
+//runIde {
+//    jvmArgs '-Xmx4096m'
+//}
+
+dependencies {
+    compile 'org.jsoup:jsoup:1.12.1'
+}
