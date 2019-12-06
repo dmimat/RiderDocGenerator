@@ -1,8 +1,9 @@
-import com.intellij.codeInspection.InspectionEP;
 import com.intellij.codeInspection.ex.InspectionToolRegistrar;
 import com.intellij.codeInspection.ex.InspectionToolWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationNamesInfo;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
 import org.w3c.dom.*;
@@ -16,12 +17,15 @@ import java.util.Map;
 
 public class DumpInspections extends AnAction {
 
+    private static final String noGroupName = "Other inspections";
+
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
 
         Map<String, LangContainer> map = new HashMap<>();
+        String productName = ApplicationNamesInfo.getInstance().getProductName();
 
-        String inspections_tree_id = "product_inspections";
+        String inspections_tree_id = StardustUtil.normalizeForFileName(productName + "_inspections");
         Document inspectionTree = StardustXmlUtil.createXmlDocument();
 
         Comment comment = inspectionTree.createComment("This file was generated automatically with the Documentation Generator plugin.");
@@ -37,7 +41,7 @@ public class DumpInspections extends AnAction {
 
         Element refPagesElement = inspectionTree.createElement("toc-element");
         refPagesElement.setAttribute("toc-title", "Code Inspection Index");
-        refPagesElement.setAttribute("include-id", "code_inspection_reference");
+        refPagesElement.setAttribute("include-id", "code_inspection_index");
         refPagesElement.setAttribute("sort-children", "ascending");
 
         for (InspectionToolWrapper wrapper : InspectionToolRegistrar.getInstance().createTools()) {
@@ -49,70 +53,53 @@ public class DumpInspections extends AnAction {
                 map.put(languageKey, new LangContainer(languageKey));
             }
 
-
-            String text = wrapper.getDisplayName();
             LangContainer container = map.get(languageKey);
-            Document topic = container.doc;
-            Node descriptionNode = topic.createTextNode("");
-
-            String description =  wrapper.loadDescription().trim();
-            if (!description.startsWith("<"))
-                description = "<body>" + description.replaceAll("\n", "<br/>") + "</body>";
-
-            description = description.replaceAll("<br>", "<br/>");
-            description = description.replaceAll("<ul>", "<list>");
-            description = description.replaceAll("<ol>", "<list type=\"decimal\">");
-            description = description.replaceAll("</ul>", "</list>");
-            description = description.replaceAll("</ol>", "</list>");
-            description = description.replaceAll("<em>", "<control>");
-            description = description.replaceAll("</em>", "</control>");
-            description = description.replaceAll("<tt>", "<code>");
-            description = description.replaceAll("</tt>", "</code>");
-            description = description.replaceAll("&(?!.{0,3};)", "&amp;");
-
-            String inspectionTopicId = StardustUtil.normalizeForFileName(languageKey + "_" + text);
-
-            try {
-                org.jsoup.nodes.Document jsoupdoc = Jsoup.parse(description);
-                W3CDom w3cDom = new W3CDom();
-                org.w3c.dom.Document doc = w3cDom.fromJsoup(jsoupdoc);
-                NodeList nodes = doc.getElementsByTagName("body");
-                descriptionNode = nodes.item(0).cloneNode(true);
-                topic.adoptNode(descriptionNode);
-                topic.renameNode(descriptionNode, null, "p");
-                createTopicForInspection(nodes.item(0).cloneNode(true), inspectionTopicId, text);
-
-                Element inspectionTocElement = inspectionTree.createElement("toc-element");
-                inspectionTocElement.setAttribute("id", inspectionTopicId + ".xml");
-                rootTocElement.appendChild(inspectionTocElement);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                descriptionNode = topic.createComment(
-                        "Problems in the inspection description: " + e.getLocalizedMessage());
-                topic.adoptNode(descriptionNode);
-            }
-
-            Node inspectionTextWithLink =
-                    StardustXmlUtil.createLink(inspectionTopicId, text, null, topic, true);
-            addTableRowThreeCol(
-                    topic, container.table, inspectionTextWithLink, descriptionNode, getSeverityLink(wrapper, topic));
+            container.addInspection(wrapper, inspectionTree, rootTocElement);
         }
 
-
-
         for (LangContainer container : map.values()) {
+            container.arrangeChapters();
             StardustXmlUtil.saveTopicToFile(container.doc, "Inspections");
-
             Element inspectionRefElement = inspectionTree.createElement("toc-element");
             inspectionRefElement.setAttribute("id", container.getTopicId() + ".xml");
+            if (container.hasChapters)
+                inspectionRefElement.setAttribute("show-structure-for", "chapter");
             refPagesElement.appendChild(inspectionRefElement);
         }
 
         inspectionTree.getDocumentElement().appendChild(refPagesElement);
-        inspectionTree.getDocumentElement().appendChild(rootTocElement);
+         inspectionTree.getDocumentElement().appendChild(rootTocElement);
+
         StardustXmlUtil.saveXmlDocumentToFile(
                 inspectionTree,StardustUtil.getRiderDocPath() + "\\" + inspections_tree_id + ".tree");
+    }
+
+    private Node descriptionToXmlNode(String description){
+        org.jsoup.nodes.Document jsoupdoc = Jsoup.parse(description);
+        W3CDom w3cDom = new W3CDom();
+        org.w3c.dom.Document doc = w3cDom.fromJsoup(jsoupdoc);
+        NodeList nodes = doc.getElementsByTagName("body");
+        Node descNode = nodes.item(0);
+        doc.renameNode(descNode, null, "p");
+        return nodes.item(0);
+    }
+
+    @NotNull
+    private String getCleanDescription(InspectionToolWrapper wrapper) {
+        String description =  wrapper.loadDescription().trim();
+        if (!description.startsWith("<"))
+            description = "<body>" + description.replaceAll("\n", "<br/>") + "</body>";
+        description = description.replaceAll("<br>", "<br/>");
+        description = description.replaceAll("<ul>", "<list>");
+        description = description.replaceAll("<ol>", "<list type=\"decimal\">");
+        description = description.replaceAll("</ul>", "</list>");
+        description = description.replaceAll("</ol>", "</list>");
+        description = description.replaceAll("<em>", "<control>");
+        description = description.replaceAll("</em>", "</control>");
+        description = description.replaceAll("<tt>", "<code>");
+        description = description.replaceAll("</tt>", "</code>");
+        description = description.replaceAll("&(?!.{0,3};)", "&amp;");
+        return description;
     }
 
     private void createTopicForInspection(Node content, String topicId, String name){
@@ -130,23 +117,88 @@ public class DumpInspections extends AnAction {
         StardustXmlUtil.saveTopicToFile(doc, "Inspections\\InspectionTopics");
     }
 
-
     private class LangContainer {
         String languageKey;
         Document doc;
-        Element table;
+        Map<String, Element> categories = new HashMap<>();
+        boolean hasChapters = false;
 
         LangContainer(String languageKey) {
             this.languageKey = languageKey;
             this.doc = StardustXmlUtil.createTopic(getTopicId(),"Code Inspections in " + languageKey);
-            table = doc.createElement("table");
+        }
+
+        private Element initTableForCategory(){
+            Element table = doc.createElement("table");
             addTableRowThreeCol(doc, table, doc.createTextNode("Inspection"), doc.createTextNode("Description"),
                     doc.createTextNode("Default Severity"));
-            doc.getDocumentElement().appendChild(table);
+            return table;
+        }
+
+        public void addInspection(InspectionToolWrapper wrapper, Document inspectionTree, Element rootTocElement){
+            String category = wrapper.getGroupDisplayName();
+            if (category.isEmpty() || category.equals(languageKey))
+                category = noGroupName;
+            if (!categories.containsKey(category)) {
+                categories.put(category, initTableForCategory());
+            }
+
+            Element table = categories.get(category);
+
+            Node descriptionNode = descriptionToXmlNode(getCleanDescription(wrapper));
+            doc.adoptNode(descriptionNode);
+            String text = wrapper.getDisplayName();
+            String inspectionTopicId = StardustUtil.normalizeForFileName(languageKey + "_" + text);
+            Node inspectionTextWithLink =
+                    StardustXmlUtil.createLink(inspectionTopicId, text, null, doc, true);
+            addTableRowThreeCol(
+                    doc, table, inspectionTextWithLink, descriptionNode, getSeverityLink(wrapper, doc));
+
+            // create topic for inspection
+            try {
+                createTopicForInspection(descriptionNode, inspectionTopicId, text);
+                Element inspectionTocElement = inspectionTree.createElement("toc-element");
+                inspectionTocElement.setAttribute("id", inspectionTopicId + ".xml");
+                rootTocElement.appendChild(inspectionTocElement);
+            } catch (Exception e) {
+                e.printStackTrace();
+//                descriptionNode = topic.createComment(
+//                        "Problems in the inspection description: " + e.getLocalizedMessage());
+//                topic.adoptNode(descriptionNode);
+            }
         }
 
         public String getTopicId(){
             return "Code_Inspections_in_" + StardustUtil.normalizeForFileName(languageKey);
+        }
+
+        public void arrangeChapters(){
+            if (categories.size()==1)
+            {
+                doc.getDocumentElement().appendChild(categories.get(categories.keySet().toArray()[0]));
+                return;
+            }
+
+            hasChapters = true;
+
+            Element uncategorizedTable = categories.get(noGroupName);
+
+            for ( Map.Entry<String, Element> entry : categories.entrySet()) {
+                String category = entry.getKey();
+                if (category.equals(noGroupName)) continue;
+                appendChapter(entry.getValue(), category);
+            }
+
+            if (uncategorizedTable != null)
+                appendChapter(uncategorizedTable, noGroupName);
+        }
+
+        private void appendChapter(Element table, String category){
+            Element chapter = doc.createElement("chapter");
+            chapter.setAttribute("title", category);
+            chapter.setAttribute("id", StardustUtil.normalizeForFileName(category));
+            chapter.appendChild(table);
+            doc.getDocumentElement().appendChild(chapter);
         }
     }
 
