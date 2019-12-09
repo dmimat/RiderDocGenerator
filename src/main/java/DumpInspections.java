@@ -47,9 +47,11 @@ public class DumpInspections extends AnAction {
         inspectionListElement.setAttribute("hidden", "true");
 
         Element refPagesElement = inspectionTree.createElement("toc-element");
-        refPagesElement.setAttribute("toc-title", "Code Inspection Index");
+        refPagesElement.setAttribute("id", "code_inspection_index.xml");
         refPagesElement.setAttribute("include-id", "code_inspection_index");
         refPagesElement.setAttribute("sort-children", "ascending");
+        if (anotherModule)
+            refPagesElement.setAttribute("origin", "intellij-platform");
 
         for (InspectionToolWrapper wrapper : InspectionToolRegistrar.getInstance().createTools()) {
             if (wrapper.loadDescription() == null) continue;
@@ -114,13 +116,13 @@ public class DumpInspections extends AnAction {
     private void createTopicForInspection(Node content, String topicId, String name) {
         Document doc = StardustXmlUtil.createTopic(topicId, "Code Inspection: " + name);
         doc.getDocumentElement().appendChild(
-                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", "inspection_header", doc, false));
+                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", "inspection_header", doc, true));
         doc.adoptNode(content);
         doc.getDocumentElement().appendChild(content);
         doc.getDocumentElement().appendChild(
                 StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", topicId, doc, true));
         doc.getDocumentElement().appendChild(
-                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", "inspection_footer", doc, false));
+                StardustXmlUtil.createInclude("INSPECTIONS_STATIC_CHUNKS.xml", "inspection_footer", doc, true));
 
         StardustXmlUtil.saveTopicToFile(doc, "Inspections\\InspectionTopics");
     }
