@@ -25,8 +25,8 @@ class StardustXmlUtil {
 
     static Element createInclude(String src, String includeId, Document doc, Boolean nullable){
         Element include = doc.createElement("include");
-        include.setAttribute("include-id", includeId);
         include.setAttribute("src", src);
+        include.setAttribute("include-id", includeId);
         if (nullable)
             include.setAttribute("nullable", "true");
         return include;

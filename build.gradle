@@ -22,7 +22,9 @@ intellij {
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
     // This will download from www.jetbrains.com/intellij-repository/snapshots or
     // www.jetbrains.com/intellij-repository/releases, respectively.
-    //version = "LATEST-EAP-SNAPSHOT"
+//    version = "LATEST-EAP-SNAPSHOT"
+//    version = "2019.3"
+//    plugins ['com.jetbrains.php']
     // Sources aren't available for Rider
     version '2019.3-EAP7-SNAPSHOT'
     pluginName 'RiderDocGenerator'
