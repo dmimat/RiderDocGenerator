@@ -26,16 +26,16 @@ intellij {
 //    version = "2019.3"
 //    plugins ['com.jetbrains.php']
     // Sources aren't available for Rider
-    version '2019.3-EAP7-SNAPSHOT'
+    version '2020.1-EAP7-SNAPSHOT'
     pluginName 'RiderDocGenerator'
 }
 
-instrumentCode {
-    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
-}
+//instrumentCode {
+//    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
+//}
 
 //runIde {
-//    jvmArgs '-Xmx4096m'
+//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-1\\201.6668.30'
 //}
 
 dependencies {

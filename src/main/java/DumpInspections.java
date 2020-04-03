@@ -12,15 +12,16 @@ import org.xml.sax.InputSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DumpInspections extends AnAction {
 
     private static final String noGroupName = "Other inspections";
     private static boolean generateInspectionTopics = false;
-    private static boolean anotherModule = false;
+    private static boolean hasRootTopic = false;
     private String productName;
+    private String inspectionsNodeTitle = "Code Inspection Index";
+    private List<String> processedInspections = new ArrayList<>();
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
@@ -28,9 +29,11 @@ public class DumpInspections extends AnAction {
         Map<String, LangContainer> map = new HashMap<>();
         productName = ApplicationNamesInfo.getInstance().getProductName();
         if (productName.toLowerCase().contains("rider"))
-            anotherModule = true;
-        if (productName.toLowerCase().contains("php"))
+            inspectionsNodeTitle = "Code Inspection Index (Web-Related)";
+        if (productName.toLowerCase().contains("php")){
             generateInspectionTopics = true;
+            hasRootTopic = true;
+        }
 
         String inspections_tree_id = StardustUtil.normalizeForFileName(productName + "_inspections");
         Document inspectionTree = StardustXmlUtil.createXmlDocument();
@@ -47,13 +50,18 @@ public class DumpInspections extends AnAction {
         inspectionListElement.setAttribute("hidden", "true");
 
         Element refPagesElement = inspectionTree.createElement("toc-element");
-        refPagesElement.setAttribute("id", "code_inspection_index.xml");
+        if (hasRootTopic)
+            refPagesElement.setAttribute("id", "ps_code_inspection_index.xml");
+        else
+            refPagesElement.setAttribute("toc-title", inspectionsNodeTitle);
         refPagesElement.setAttribute("include-id", "code_inspection_index");
         refPagesElement.setAttribute("sort-children", "ascending");
-        if (anotherModule)
-            refPagesElement.setAttribute("origin", "intellij-platform");
 
-        for (InspectionToolWrapper wrapper : InspectionToolRegistrar.getInstance().createTools()) {
+        List<InspectionToolWrapper> wrappers = InspectionToolRegistrar.getInstance().createTools();
+        Comparator<InspectionToolWrapper> compareById = Comparator.comparing(InspectionToolWrapper::getDisplayName);
+        wrappers.sort(compareById);
+
+        for (InspectionToolWrapper wrapper : wrappers) {
             if (wrapper.loadDescription() == null) continue;
             String languageKey = wrapper.getGroupPath()[0];
             if (!map.containsKey(languageKey)) {
@@ -63,7 +71,9 @@ public class DumpInspections extends AnAction {
             container.addInspection(wrapper, inspectionTree, inspectionListElement);
         }
 
-        for (LangContainer container : map.values()) {
+        Map<String, LangContainer> treeMap = new TreeMap<>(map);
+
+        for (LangContainer container : treeMap.values()) {
             container.arrangeChapters();
             StardustXmlUtil.saveTopicToFile(container.doc, "Inspections");
 
@@ -71,8 +81,6 @@ public class DumpInspections extends AnAction {
             inspectionRefElement.setAttribute("id", container.getTopicId() + ".xml");
             if (container.hasChapters)
                 inspectionRefElement.setAttribute("show-structure-for", "chapter");
-            if (anotherModule)
-                inspectionRefElement.setAttribute("origin", "intellij-platform");
             refPagesElement.appendChild(inspectionRefElement);
         }
 
@@ -109,6 +117,8 @@ public class DumpInspections extends AnAction {
         description = description.replaceAll("</em>", "</control>");
         description = description.replaceAll("<tt>", "<code>");
         description = description.replaceAll("</tt>", "</code>");
+        description = description.replaceAll("<p>", "<br/><br/>");
+        description = description.replaceAll("</p>", "");
         description = description.replaceAll("&(?!.{0,3};)", "&amp;");
         return description;
     }
@@ -165,6 +175,10 @@ public class DumpInspections extends AnAction {
             doc.adoptNode(descriptionNode);
             String text = wrapper.getDisplayName();
             String inspectionTopicId = StardustUtil.normalizeForFileName(languageKey + "_" + text);
+            if (processedInspections.contains(inspectionTopicId))
+                return;
+            else
+                processedInspections.add(inspectionTopicId);
             Node inspectionTextWithLink =
                     StardustXmlUtil.createLink(inspectionTopicId, text, null, doc, true);
             addTableRowThreeCol(
