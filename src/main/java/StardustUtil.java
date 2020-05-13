@@ -18,12 +18,12 @@ public class StardustUtil {
 
     public static String getRiderDocPath(){
         if (riderDocPath != null) return riderDocPath;
-//        return "C:\\DocSource\\help-sources\\intellij-platform";
-        FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
-        descriptor.setDescription("Select Rider documentation root");
-        VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
-        riderDocPath = file.getPath();
-        return riderDocPath;
+        return "C:\\DocSource\\help-sources\\intellij-platform";
+//        FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
+//        descriptor.setDescription("Select Rider documentation root");
+//        VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
+//        riderDocPath = file.getPath();
+//        return riderDocPath;
     }
 
     public static String normalizeForFileName(String s){

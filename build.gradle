@@ -18,6 +18,7 @@ repositories {
 
 intellij {
     type 'RD'
+  //  type 'IJ'
     // Download a version of Rider to compile and run with. Either set `version` to
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
     // This will download from www.jetbrains.com/intellij-repository/snapshots or
@@ -26,7 +27,7 @@ intellij {
 //    version = "2019.3"
 //    plugins ['com.jetbrains.php']
     // Sources aren't available for Rider
-    version '2020.1-EAP7-SNAPSHOT'
+//    version '2020.1-EAP7-SNAPSHOT'
     pluginName 'RiderDocGenerator'
 }
 
@@ -34,9 +35,10 @@ intellij {
 //    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
 //}
 
-//runIde {
-//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-1\\201.6668.30'
-//}
+runIde {
+ // ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\datagrip\\ch-0\\201.6668.99'
+    jvmArgs '-Didea.platform.prefix=DataGrip'
+}
 
 dependencies {
     compile 'org.jsoup:jsoup:1.12.1'
