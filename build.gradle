@@ -27,7 +27,7 @@ intellij {
 //    version = "2019.3"
 //    plugins ['com.jetbrains.php']
     // Sources aren't available for Rider
-//    version '2020.1-EAP7-SNAPSHOT'
+    version '2020.1'
     pluginName 'RiderDocGenerator'
 }
 
@@ -37,7 +37,7 @@ intellij {
 
 runIde {
  // ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\datagrip\\ch-0\\201.6668.99'
-    jvmArgs '-Didea.platform.prefix=DataGrip'
+  //  jvmArgs '-Didea.platform.prefix=DataGrip'
 }
 
 dependencies {
