@@ -115,9 +115,12 @@ public class DumpInspections extends AnAction {
         description = description.replaceAll("</ol>", "</list>");
         description = description.replaceAll("<em>", "<control>");
         description = description.replaceAll("</em>", "</control>");
+        description = description.replaceAll("<small>", "<emphasis>");
+        description = description.replaceAll("</small>", "</emphasis>");
         description = description.replaceAll("<tt>", "<code>");
         description = description.replaceAll("</tt>", "</code>");
         description = description.replaceAll("<p>", "<br/><br/>");
+        description = description.replaceAll("<p id=\"footer\">", "<br/><br/>");
         description = description.replaceAll("</p>", "");
         description = description.replaceAll("&(?!.{0,3};)", "&amp;");
         return description;

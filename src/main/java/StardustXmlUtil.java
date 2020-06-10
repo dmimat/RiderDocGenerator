@@ -51,7 +51,7 @@ class StardustXmlUtil {
         Comment comment = doc.createComment("This topic was generated automatically with the Documentation Generator plugin.");
         Element rootElement = doc.createElement("topic");
         rootElement.setAttribute("xsi:noNamespaceSchemaLocation",
-                "http://helpserver.labs.intellij.net/help/topic.v2.xsd");
+                "https://helpserver.labs.jb.gg/help/topic.v2.xsd");
         rootElement.setAttribute("xmlns:xsi",
                 "http://www.w3.org/2001/XMLSchema-instance");
         rootElement.setAttribute("id", topicId);

@@ -13,7 +13,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="141.0"/>
+  <idea-version since-build="193.0"/>
   <depends>com.intellij.modules.platform</depends>
 
 
@@ -25,6 +25,7 @@
   <!--<depends>com.intellij.modules.rider</depends>-->
 
   <extensions defaultExtensionNs="com.intellij">
+    <searchEverywhereContributor implementation="DocSearchEverywhereContributor$Factory"/>
     <!-- Add your extensions here -->
   </extensions>
 
