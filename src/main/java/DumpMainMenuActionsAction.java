@@ -1,3 +1,4 @@
+import com.intellij.codeInspection.ex.InspectionToolWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Shortcut;
@@ -87,6 +88,8 @@ public class DumpMainMenuActionsAction extends AnAction {
             List<Shortcut []> shortcuts = new ArrayList<Shortcut[]>();
             for (String keymapId : DumpShortcutsForHelpAction.activeKeymapIds){
                 Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
+                if (keymap == null)
+                    continue;
                 Shortcut[] sh = keymap.getShortcuts(id);
                 if (sh.length == 0) continue;
                 shortcuts.add(sh);
@@ -133,8 +136,8 @@ public class DumpMainMenuActionsAction extends AnAction {
         StardustXmlUtil.saveTopicToFile(introTopic, null);
     }
 
-    private static Map<String, String> getMenuPathList(List<Object[]> paths, ActionManagerEx actionManager){
-        Map<String, String> map = new HashMap<>();
+    private static SortedMap<String, String> getMenuPathList(List<Object[]> paths, ActionManagerEx actionManager){
+        SortedMap<String, String> map = new TreeMap<>();
         for (Object[] path : paths) {
             if(path.length == 1) continue;
             String str = "";

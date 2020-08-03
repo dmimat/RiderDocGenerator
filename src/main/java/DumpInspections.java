@@ -57,19 +57,18 @@ public class DumpInspections extends AnAction {
         refPagesElement.setAttribute("include-id", "code_inspection_index");
         refPagesElement.setAttribute("sort-children", "ascending");
 
-        List<InspectionToolWrapper> wrappers = InspectionToolRegistrar.getInstance().createTools();
+        List<InspectionToolWrapper<?, ?>> wrappers = InspectionToolRegistrar.getInstance().createTools();
         Comparator<InspectionToolWrapper> compareById = Comparator.comparing(InspectionToolWrapper::getDisplayName);
         wrappers.sort(compareById);
 
-        for (InspectionToolWrapper wrapper : wrappers) {
-            if (wrapper.loadDescription() == null) continue;
+        wrappers.stream().filter(wrapper -> wrapper.loadDescription() != null).forEach(wrapper -> {
             String languageKey = wrapper.getGroupPath()[0];
             if (!map.containsKey(languageKey)) {
                 map.put(languageKey, new LangContainer(languageKey));
             }
             LangContainer container = map.get(languageKey);
             container.addInspection(wrapper, inspectionTree, inspectionListElement);
-        }
+        });
 
         Map<String, LangContainer> treeMap = new TreeMap<>(map);
 
@@ -116,7 +115,9 @@ public class DumpInspections extends AnAction {
         description = description.replaceAll("<em>", "<control>");
         description = description.replaceAll("</em>", "</control>");
         description = description.replaceAll("<small>", "<emphasis>");
+        description = description.replaceAll("<strong>", "<code>");
         description = description.replaceAll("</small>", "</emphasis>");
+        description = description.replaceAll("</strong>", "</code>");
         description = description.replaceAll("<tt>", "<code>");
         description = description.replaceAll("</tt>", "</code>");
         description = description.replaceAll("<p>", "<br/><br/>");

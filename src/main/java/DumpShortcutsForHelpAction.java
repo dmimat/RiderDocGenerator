@@ -54,6 +54,8 @@ public class DumpShortcutsForHelpAction extends AnAction {
 
             for (String keymapId : activeKeymapIds) {
                 Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
+                if(keymap == null)
+                    continue;
                 Shortcut[] shortcuts = keymap.getShortcuts(id);
                 if (shortcuts.length == 0) continue;
                 Shortcut shortcut = shortcuts[0];
