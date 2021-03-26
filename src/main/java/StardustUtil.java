@@ -18,8 +18,8 @@ public class StardustUtil {
 
     public static String getRiderDocPath(){
         if (riderDocPath != null) return riderDocPath;
-        return "C:\\DocSource\\help-sources\\intellij-platform";
-     //   return "C:\\DocSource\\help-sources\\rider";
+     //   return "C:\\DocSource\\help-sources\\intellij-platform";
+        return "C:\\DocSource\\help-sources\\rider";
 //        FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
 //        descriptor.setDescription("Select Rider documentation root");
 //        VirtualFile file = FileChooser.chooseFile(descriptor, null, null);

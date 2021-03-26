@@ -24,8 +24,14 @@ import java.util.Arrays;
  */
 public class DumpShortcutsForHelpAction extends AnAction {
 
-    public static final String[] activeKeymapIds = new String[]{"Visual Studio", "ReSharper", "$default",
-            "Visual Studio OSX", "ReSharper OSX", "Mac OS X 10.5+"};
+    public static final String[] activeKeymapIds = new String[]{
+            "primary_Visual Studio (Windows)",
+            "primary_ReSharper (Windows)",
+            "primary_IntelliJ (Windows)",
+            "secondary_Visual Studio (OSX)",
+            "secondary_ReSharper (OSX)",
+            "secondary_IntelliJ (OSX)"
+    };
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -78,8 +84,9 @@ public class DumpShortcutsForHelpAction extends AnAction {
 
         String rootDir = StardustUtil.getRiderDocPath();
         File actionMapFile = new File(rootDir + "\\nonProject\\ActionMap.xml");
+        File keymapFile = new File(rootDir + "\\nonProject\\keymap-rdr.xml");
 
-        Document topic = StardustXmlUtil.createTopic("Keymap_Chunks", "Keymap Chunks");
+        Document keymapChunksTopic = StardustXmlUtil.createTopic("Keymap_Chunks", "Keymap Chunks");
 
         NodeList categories = null;
 
@@ -96,17 +103,31 @@ public class DumpShortcutsForHelpAction extends AnAction {
 
         if (categories == null) return;
 
+        NodeList actionNodesFromKeymap = null;
+
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(keymapFile);
+            doc.getDocumentElement().normalize();
+            actionNodesFromKeymap = doc.getElementsByTagName("Action");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (actionNodesFromKeymap == null) return;
 
         for (int i = 0; i < categories.getLength(); i++) {
             Element category = (Element) categories.item(i);
             Element chunk =
-                    StardustXmlUtil.createChunk(category.getAttribute("name"), topic);
+                    StardustXmlUtil.createChunk(category.getAttribute("name"), keymapChunksTopic);
             NodeList actionNodes = category.getElementsByTagName("action");
             for (int j = 0; j < actionNodes.getLength(); j++) {
                 Element actionElement = (Element) actionNodes.item(j);
                 String actionId = actionElement.getAttribute("id");
-                Element tr = topic.createElement("tr");
-                Element td1 = topic.createElement("td");
+                Element tr = keymapChunksTopic.createElement("tr");
+                Element td1 = keymapChunksTopic.createElement("td");
                 AnAction action = actionManager.getAction(actionId);
                 String text = null;
                 String hardText = actionElement.getAttribute("text");
@@ -125,26 +146,35 @@ public class DumpShortcutsForHelpAction extends AnAction {
                         StardustXmlUtil.createLink(actionElement.getAttribute("topic"),
                                 text, actionElement.getAttribute("anchor"),
                                 //actionElement.getAttribute("origin"),
-                                topic, false);
+                                keymapChunksTopic, false);
                 td1.appendChild(link);
                 tr.appendChild(td1);
 
                 String trFilters = "";
 
                 for (String keymapId : activeKeymapIds) {
-                    Element td2 = topic.createElement("td");
-                    Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
-                    Shortcut[] shortcuts = keymap.getShortcuts(actionId);
-
+                    Element td2 = keymapChunksTopic.createElement("td");
                     td2.setAttribute("filter", keymapId);
                     td2.setAttribute("width", "25%");
-                    for (Shortcut shortcut : shortcuts)
-                        addShortcut(
-                                StardustUtil.normalizeShortcutKeys(
-                                        KeymapUtil.getShortcutText(shortcut), keymapId), td2, topic);
+
+                    for (int n = 0; n < actionNodesFromKeymap.getLength(); n++) {
+                        Element actionEl = (Element) actionNodesFromKeymap.item(n);
+                        NodeList shortcutNodes = actionEl.getElementsByTagName("Shortcut");
+                        for (int m = 0; j < shortcutNodes.getLength(); m++) {
+                            Element shortcutEl = (Element) actionNodes.item(m);
+                            String layout = shortcutEl.getAttribute("layout");
+                            if (layout.equals(keymapId))
+                            {
+                                addShortcut(
+                                        StardustUtil.normalizeShortcutKeys(shortcutEl.getTextContent(), keymapId),
+                                        td2, keymapChunksTopic);
+                            }
+                        }
+
+                    }
                     String hardShortcut = actionElement.getAttribute("shortcut");
                     if (hardShortcut != null && !hardShortcut.isEmpty())
-                        addShortcut(StardustUtil.normalizeShortcutKeys(hardShortcut, keymapId), td2, topic);
+                        addShortcut(StardustUtil.normalizeShortcutKeys(hardShortcut, keymapId), td2, keymapChunksTopic);
                     tr.appendChild(td2);
                     if (td2.hasChildNodes()) {
                         if (!trFilters.isEmpty())
@@ -155,9 +185,9 @@ public class DumpShortcutsForHelpAction extends AnAction {
                 if (!trFilters.isEmpty()) {
                     trFilters += ",switchable";
                     tr.setAttribute("filter", trFilters);
-                    Element shortcutSw = topic.createElement("shortcut");
+                    Element shortcutSw = keymapChunksTopic.createElement("shortcut");
                     shortcutSw.setAttribute("key", actionId);
-                    Element td3 = topic.createElement("td");
+                    Element td3 = keymapChunksTopic.createElement("td");
                     td3.appendChild(shortcutSw);
                     td3.setAttribute("filter", "switchable");
                     td3.setAttribute("width", "25%");
@@ -165,9 +195,9 @@ public class DumpShortcutsForHelpAction extends AnAction {
                 }
                 chunk.appendChild(tr);
             }
-            topic.getDocumentElement().appendChild(chunk);
+            keymapChunksTopic.getDocumentElement().appendChild(chunk);
         }
-        StardustXmlUtil.saveTopicToFile(topic, null);
+        StardustXmlUtil.saveTopicToFile(keymapChunksTopic, null);
     }
 
     private void addShortcut(String text, Element parent, Document topic) {

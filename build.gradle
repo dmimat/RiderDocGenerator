@@ -18,7 +18,7 @@ repositories {
 
 intellij {
     //type 'PS'
-    //type 'RD'
+    type 'RD'
   //  type 'IJ'
     // Download a version of Rider to compile and run with. Either set `version` to
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
@@ -38,7 +38,8 @@ intellij {
 //}
 
 runIde {
-  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-0\\202.6397.115'
+  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-1\\211.6694.7'
+  //ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-0\\202.6397.115'
  // ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\datagrip\\ch-0\\201.6668.99'
   //  jvmArgs '-Didea.platform.prefix=DataGrip'
 }

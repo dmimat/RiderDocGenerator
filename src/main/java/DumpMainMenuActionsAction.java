@@ -26,7 +26,7 @@ public class DumpMainMenuActionsAction extends AnAction {
         Group rootGroup = ActionsTreeUtil.createMainGroup(null, null, QuickListsManager.getInstance().getAllQuickLists());
         List<Object[]> result = new ArrayList<>();
         for (Object group : rootGroup.getChildren()) {
-            if (Objects.equals(group.toString(), ActionsTreeUtil.MAIN_MENU_TITLE))
+            if (Objects.equals(group.toString(), ActionsTreeUtil.getMainMenuTitle()))
                 for (Object path : ((Group) group).getChildren()) {
                     createPaths(path, new ArrayList<>(), result);
                     result.add(new String[]{"============================="});
