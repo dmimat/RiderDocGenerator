@@ -25,12 +25,8 @@ import java.util.Arrays;
 public class DumpShortcutsForHelpAction extends AnAction {
 
     public static final String[] activeKeymapIds = new String[]{
-            "primary_Visual Studio (Windows)",
-            "primary_ReSharper (Windows)",
-            "primary_IntelliJ (Windows)",
-            "secondary_Visual Studio (OSX)",
-            "secondary_ReSharper (OSX)",
-            "secondary_IntelliJ (OSX)"
+            "Visual Studio",
+            "$default"
     };
 
     @Override

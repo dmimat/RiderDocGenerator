@@ -18,8 +18,8 @@ public class StardustUtil {
 
     public static String getRiderDocPath(){
         if (riderDocPath != null) return riderDocPath;
-     //   return "C:\\DocSource\\help-sources\\intellij-platform";
-        return "C:\\DocSource\\help-sources\\rider";
+      return "C:\\DocSource\\help-sources\\intellij-platform";
+ //       return "C:\\DocSource\\help-sources\\rider";
 //        FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
 //        descriptor.setDescription("Select Rider documentation root");
 //        VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
@@ -69,5 +69,16 @@ public class StardustUtil {
             normalized = normalized.replace(entry.getKey(), entry.getValue());
         }
         return normalized;
+    }
+
+    public static String replaceActonName(String actionName){
+        String replacement = actionName;
+        Map<String, String> replacements = new HashMap<String, String>() {{
+            put("Go to Super Method", "Base Symbols");
+        }};
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            replacement = actionName.replace(entry.getKey(), entry.getValue());
+        }
+        return replacement;
     }
 }

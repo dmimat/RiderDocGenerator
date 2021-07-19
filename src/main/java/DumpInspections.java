@@ -105,25 +105,32 @@ public class DumpInspections extends AnAction {
     @NotNull
     private String getCleanDescription(InspectionToolWrapper wrapper) {
         String description = wrapper.loadDescription().trim();
-        if (!description.startsWith("<"))
+        if (!description.startsWith("<")) {
             description = "<body>" + description.replaceAll("\n", "<br/>") + "</body>";
+            return description;
+        }
         description = description.replaceAll("<br>", "<br/>");
         description = description.replaceAll("<ul>", "<list>");
         description = description.replaceAll("<ol>", "<list type=\"decimal\">");
         description = description.replaceAll("</ul>", "</list>");
         description = description.replaceAll("</ol>", "</list>");
-        description = description.replaceAll("<em>", "<control>");
-        description = description.replaceAll("</em>", "</control>");
-        description = description.replaceAll("<small>", "<emphasis>");
-        description = description.replaceAll("<strong>", "<code>");
-        description = description.replaceAll("</small>", "</emphasis>");
-        description = description.replaceAll("</strong>", "</code>");
-        description = description.replaceAll("<tt>", "<code>");
-        description = description.replaceAll("</tt>", "</code>");
         description = description.replaceAll("<p>", "<br/><br/>");
         description = description.replaceAll("<p id=\"footer\">", "<br/><br/>");
         description = description.replaceAll("</p>", "");
         description = description.replaceAll("&(?!.{0,3};)", "&amp;");
+        description = description.replaceAll("<pre>\\s*<code>", "<code style=\"block\">");
+        description = description.replaceAll("</code>\\s*</pre>", "</code>");
+        description = description.replaceAll("<pre>", "<code style=\"block\">");
+        description = description.replaceAll("</pre>", "</code>");
+        description = description.replaceAll("<b>", "");
+        description = description.replaceAll("</b>", "");
+        description = description.replaceAll("<font color=\".*\">(.*)</font>", "$1");
+        description = description.replaceAll("<span style=\".*\">(.*)</span>", "$1");
+        description = description.replaceAll("<strong>(.*)</strong>", "<b>$1</b>");
+        description = description.replaceAll("<small>(.*)</small>", "<emphasis>$1</emphasis>");
+        description = description.replaceAll("<em>(.*)</em>", "<control>$1</control>");
+        description = description.replaceAll("<tt>(.*)</tt>", "<code>$1</code>");
+
         return description;
     }
 

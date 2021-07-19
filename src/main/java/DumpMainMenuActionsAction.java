@@ -1,11 +1,9 @@
-import com.intellij.codeInspection.ex.InspectionToolWrapper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
 import com.intellij.openapi.actionSystem.ex.QuickListsManager;
 import com.intellij.openapi.keymap.Keymap;
-import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
 import com.intellij.openapi.keymap.impl.ui.ActionsTreeUtil;
 import com.intellij.openapi.keymap.impl.ui.Group;
@@ -78,7 +76,7 @@ public class DumpMainMenuActionsAction extends AnAction {
             topic.getDocumentElement().appendChild(chunk);
         }
 
-        for (String id : actionManager.getActionIds("")) {
+        for (String id : actionManager.getActionIdList("")) {
             Element introChunk = StardustXmlUtil.createChunk(id , introTopic);
             Element menuPath = null;
             if(menuMap.containsKey(id)){
@@ -149,6 +147,7 @@ public class DumpMainMenuActionsAction extends AnAction {
                     AnAction action = actionManager.getAction((String) node);
                     if (action != null)
                         text = action.getTemplatePresentation().getText();
+                    text = StardustUtil.replaceActonName(text);
                 }
                 str += text + " | ";
             }

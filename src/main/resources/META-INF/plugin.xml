@@ -13,7 +13,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="193.0"/>
+  <idea-version since-build="212.0"/>
   <depends>com.intellij.modules.platform</depends>
 
 
@@ -25,19 +25,20 @@
   <!--<depends>com.intellij.modules.rider</depends>-->
 
   <extensions defaultExtensionNs="com.intellij">
-    <searchEverywhereContributor implementation="DocSearchEverywhereContributor$Factory"/>
+
     <!-- Add your extensions here -->
   </extensions>
 
   <actions>
     <!-- Add your actions here -->
-    <group id="RiderDocGenerator.Menu" text="Help Content Generator" description="Help Content Generator">
+    <group id="RiderDocGenerator.Menu" text="Help Content Generator" popup="true">
       <add-to-group group-id="MainMenu" anchor="last"  />
-      <action id="RiderDocGenerator.DumpShortcutsForHelpAction" class="DumpShortcutsForHelpAction" text="Export shortcuts for help" />
+<!--      <action id="RiderDocGenerator.DumpShortcutsForHelpAction" class="DumpShortcutsForHelpAction" text="Export shortcuts for help" />-->
       <action id="RiderDocGenerator.DumpMainMenuActionsAction" class="DumpMainMenuActionsAction" text="Export main menu actions" />
-      <action id="RiderDocGenerator.DumpBundledPlugins" class="DumpBundledPlugins" text="Export bundled plugins" />
+<!--      <action id="RiderDocGenerator.DumpBundledPlugins" class="DumpBundledPlugins" text="Export bundled plugins" />-->
       <action id="RiderDocGenerator.DumpInspections" class="DumpInspections" text="Export front-end code inspections" />
       <!--<action id="RiderDocGenerator.Dialogs" class="ShortcutsAction" text="Show _Dialog" description="A test menu item" />-->
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
     </group>
   </actions>
 

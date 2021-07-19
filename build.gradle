@@ -18,8 +18,8 @@ repositories {
 
 intellij {
     //type 'PS'
-    type 'RD'
-  //  type 'IJ'
+//    type 'RD'
+    //type 'GO'
     // Download a version of Rider to compile and run with. Either set `version` to
     // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
     // This will download from www.jetbrains.com/intellij-repository/snapshots or
@@ -38,9 +38,10 @@ intellij {
 //}
 
 runIde {
-  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-1\\211.6694.7'
-  //ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-0\\202.6397.115'
- // ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\datagrip\\ch-0\\201.6668.99'
+//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-1\\212.4615.24'
+//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-0\\212.4765'
+   ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\datagrip\\ch-0\\213.1186'
+//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Goland\\ch-0\\212.4790'
   //  jvmArgs '-Didea.platform.prefix=DataGrip'
 }
 
