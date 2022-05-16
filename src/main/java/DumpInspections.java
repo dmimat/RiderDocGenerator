@@ -17,10 +17,10 @@ import java.util.*;
 public class DumpInspections extends AnAction {
 
     private static final String noGroupName = "Other inspections";
-    private static boolean generateInspectionTopics = false;
-    private static boolean hasRootTopic = false;
+    private static boolean generateInspectionTopics = true;
+    private static boolean hasRootTopic = true;
     private String productName;
-    private String inspectionsNodeTitle = "Code Inspection Index";
+    private String inspectionsNodeTitle = "Index of code inspections";
     private List<String> processedInspections = new ArrayList<>();
 
     @Override
@@ -28,9 +28,8 @@ public class DumpInspections extends AnAction {
 
         Map<String, LangContainer> map = new HashMap<>();
         productName = ApplicationNamesInfo.getInstance().getProductName();
-        if (productName.toLowerCase().contains("rider"))
-            inspectionsNodeTitle = "Code Inspection Index (Web-Related)";
-        if (productName.toLowerCase().contains("php")){
+        if (productName.toLowerCase().contains("rider")) {
+            inspectionsNodeTitle = "Index of code inspections (Web-related)";
             generateInspectionTopics = true;
             hasRootTopic = true;
         }
@@ -98,7 +97,7 @@ public class DumpInspections extends AnAction {
         org.w3c.dom.Document doc = w3cDom.fromJsoup(jsoupdoc);
         NodeList nodes = doc.getElementsByTagName("body");
         Node descNode = nodes.item(0);
-        doc.renameNode(descNode, null, "p");
+        doc.renameNode(descNode, null, "chunk");
         return nodes.item(0);
     }
 
@@ -106,7 +105,11 @@ public class DumpInspections extends AnAction {
     private String getCleanDescription(InspectionToolWrapper wrapper) {
         String description = wrapper.loadDescription().trim();
         if (!description.startsWith("<")) {
-            description = "<body>" + description.replaceAll("\n", "<br/>") + "</body>";
+            description = "<body>" +
+                    description
+                    //description.replaceAll("\n", "<br/>")
+                    +
+                    "</body>";
             return description;
         }
         description = description.replaceAll("<br>", "<br/>");
@@ -114,22 +117,26 @@ public class DumpInspections extends AnAction {
         description = description.replaceAll("<ol>", "<list type=\"decimal\">");
         description = description.replaceAll("</ul>", "</list>");
         description = description.replaceAll("</ol>", "</list>");
-        description = description.replaceAll("<p>", "<br/><br/>");
-        description = description.replaceAll("<p id=\"footer\">", "<br/><br/>");
-        description = description.replaceAll("</p>", "");
+        //description = description.replaceAll("<p>", "<br/>");
+        description = description.replaceAll("<p id=\"footer\">", "<p>");
+        //description = description.replaceAll("</p>", "");
+        description = description.replaceAll("<p/>", "");
         description = description.replaceAll("&(?!.{0,3};)", "&amp;");
         description = description.replaceAll("<pre>\\s*<code>", "<code style=\"block\">");
         description = description.replaceAll("</code>\\s*</pre>", "</code>");
         description = description.replaceAll("<pre>", "<code style=\"block\">");
         description = description.replaceAll("</pre>", "</code>");
         description = description.replaceAll("<b>", "");
+        description = description.replaceAll("<div>", "");
         description = description.replaceAll("</b>", "");
+        description = description.replaceAll("</div>", "");
         description = description.replaceAll("<font color=\".*\">(.*)</font>", "$1");
         description = description.replaceAll("<span style=\".*\">(.*)</span>", "$1");
         description = description.replaceAll("<strong>(.*)</strong>", "<b>$1</b>");
         description = description.replaceAll("<small>(.*)</small>", "<emphasis>$1</emphasis>");
         description = description.replaceAll("<em>(.*)</em>", "<control>$1</control>");
         description = description.replaceAll("<tt>(.*)</tt>", "<code>$1</code>");
+        //description = description.replaceAll("<br/>", "</p><p>");
 
         return description;
     }

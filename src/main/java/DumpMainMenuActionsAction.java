@@ -94,17 +94,20 @@ public class DumpMainMenuActionsAction extends AnAction {
             }
             if (menuPath != null || shortcuts.size() > 0)
             {
-                Element par = introTopic.createElement("p");
+                Element microformat = introTopic.createElement("microformat");
                 if (menuPath != null) {
-                    par.appendChild(menuPath);
-                    par.appendChild(introTopic.createElement("br"));
+                    Element pMenu = introTopic.createElement("p");
+                    pMenu.appendChild(menuPath);
+                    microformat.appendChild(pMenu);
                 }
                 if (shortcuts.size() > 0) {
+                    Element pShortcut = introTopic.createElement("p");
                     Element shortCutElement = introTopic.createElement("shortcut");
                     shortCutElement.setAttribute("key", id);
-                    par.appendChild(shortCutElement);
+                    pShortcut.appendChild(shortCutElement);
+                    microformat.appendChild(pShortcut);
                 }
-                introChunk.appendChild(par);
+                introChunk.appendChild(microformat);
                 introTopic.getDocumentElement().appendChild(introChunk);
             }
         }

@@ -1,50 +1,25 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.14'
+    id 'org.jetbrains.intellij' version '1.5.2'
 }
 
 apply plugin: 'org.jetbrains.intellij'
-
 group 'RiderDocGenerator'
 version '1.0'
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenCentral()
-    maven{ url 'https://www.jetbrains.com/intellij-repository/snapshots/'}
-    maven { url 'https://www.myget.org/F/rd-snapshots/maven/' }
+    maven{ url "https://www.jetbrains.com/intellij-repository/snapshots"}
+    maven{ url "https://cache-redirector.jetbrains.com/intellij-dependencies"}
 }
 
 intellij {
-    //type 'PS'
-//    type 'RD'
-    //type 'GO'
-    // Download a version of Rider to compile and run with. Either set `version` to
-    // 'LATEST-TRUNK-SNAPSHOT' or 'LATEST-EAP-SNAPSHOT' or a known version.
-    // This will download from www.jetbrains.com/intellij-repository/snapshots or
-    // www.jetbrains.com/intellij-repository/releases, respectively.
-//    version = "LATEST-EAP-SNAPSHOT"
-//    version = "2019.3"
-//    plugins ['com.jetbrains.php']
-    // Sources aren't available for Rider
-    //version = '2020.2'
-    //version = '2020.2-EAP8-SNAPSHOT'
-    pluginName 'RiderDocGenerator'
+    type='IU'
+    version = '2022.1.1'
+    plugins = ['com.jetbrains.php:221.5591.58']
 }
-
-//instrumentCode {
-//    compilerVersion = "192.6817.32" // latest build of com.jetbrains.intellij.java from https://www.jetbrains.com/intellij-repository/releases/
-//}
 
 runIde {
-//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-1\\212.4615.24'
-//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\PhpStorm\\ch-0\\212.4765'
-   ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\datagrip\\ch-0\\213.1186'
-//  ideDirectory '\\C:\\Users\\dmitry.matveev\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Goland\\ch-0\\212.4790'
-  //  jvmArgs '-Didea.platform.prefix=DataGrip'
-}
-
-dependencies {
-    compile 'org.jsoup:jsoup:1.12.1'
+    //idea.platform.prefix ='RD'
+    ideDir = file('C://Users/d/AppData/Local/JetBrains/Toolbox/apps/PhpStorm/ch-0/221.5591.58')
 }
