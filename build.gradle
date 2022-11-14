@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '1.5.2'
+    id 'org.jetbrains.intellij' version '1.10.0-SNAPSHOT'
 }
 
 apply plugin: 'org.jetbrains.intellij'
@@ -14,12 +14,10 @@ repositories {
 }
 
 intellij {
-    type='IU'
     version = '2022.1.1'
-    plugins = ['com.jetbrains.php:221.5591.58']
+    updateSinceUntilBuild = false
 }
 
 runIde {
-    //idea.platform.prefix ='RD'
-    ideDir = file('C://Users/d/AppData/Local/JetBrains/Toolbox/apps/PhpStorm/ch-0/221.5591.58')
+    ideDir = file('C://Users/d/AppData/Local/JetBrains/Toolbox/apps/Rider/ch-1/223.7401.6')
 }
