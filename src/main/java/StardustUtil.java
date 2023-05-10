@@ -1,3 +1,4 @@
+import com.intellij.util.PlatformUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -7,12 +8,12 @@ import java.util.Objects;
  */
 public class StardustUtil {
 
-    static String riderDocPath;
 
-    public static String getRiderDocPath(){
-        if (riderDocPath != null) return riderDocPath;
-      return "C:\\DocSource\\help-sources\\intellij-platform";
-//        return "C:\\DocSource\\help-sources\\rider";
+    public static String getRiderDocPath() {
+        if (PlatformUtils.isRider())
+            return "C:\\DocSource\\help-sources\\rider";
+        return "C:\\DocSource\\help-sources\\intellij-platform";
+
 //        FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
 //        descriptor.setDescription("Select Rider documentation root");
 //        VirtualFile file = FileChooser.chooseFile(descriptor, null, null);
@@ -20,7 +21,7 @@ public class StardustUtil {
 //        return riderDocPath;
     }
 
-    public static String normalizeForFileName(String s){
+    public static String normalizeForFileName(String s) {
         return s.replaceAll("\\W+", "_");
     }
 
@@ -53,10 +54,10 @@ public class StardustUtil {
 
 
         Map<String, String> replacementsIos = new HashMap<String, String>() {{
-            put("Shift", Character.toString((char)8679)); // ⇧
-            put("Ctrl", Character.toString((char)8963)); // ⌃
-            put("Meta", Character.toString((char)8984)); // ⌘
-            put("Alt", Character.toString((char)8997)); // ⌥
+            put("Shift", Character.toString((char) 8679)); // ⇧
+            put("Ctrl", Character.toString((char) 8963)); // ⌃
+            put("Meta", Character.toString((char) 8984)); // ⌘
+            put("Alt", Character.toString((char) 8997)); // ⌥
         }};
         for (Map.Entry<String, String> entry : replacementsIos.entrySet()) {
             normalized = normalized.replace(entry.getKey(), entry.getValue());
@@ -64,7 +65,7 @@ public class StardustUtil {
         return normalized;
     }
 
-    public static String replaceActonName(String actionName){
+    public static String replaceActonName(String actionName) {
         String replacement = actionName;
         Map<String, String> replacements = new HashMap<String, String>() {{
             put("Go to Super Method", "Base Symbols");

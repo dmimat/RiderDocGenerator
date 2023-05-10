@@ -3,8 +3,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
 import com.intellij.openapi.actionSystem.ex.QuickListsManager;
-import com.intellij.openapi.keymap.Keymap;
-import com.intellij.openapi.keymap.ex.KeymapManagerEx;
 import com.intellij.openapi.keymap.impl.ui.ActionsTreeUtil;
 import com.intellij.openapi.keymap.impl.ui.Group;
 import org.w3c.dom.Document;
@@ -84,14 +82,14 @@ public class DumpMainMenuActionsAction extends AnAction {
                 menuPath.appendChild(introTopic.createTextNode(menuMap.get(id)));
             }
             List<Shortcut []> shortcuts = new ArrayList<Shortcut[]>();
-            for (String keymapId : DumpShortcutsForHelpAction.activeKeymapIds){
-                Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
-                if (keymap == null)
-                    continue;
-                Shortcut[] sh = keymap.getShortcuts(id);
-                if (sh.length == 0) continue;
-                shortcuts.add(sh);
-            }
+//            for (String keymapId : DumpShortcutsForHelpAction.activeKeymapIds){
+//                Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
+//                if (keymap == null)
+//                    continue;
+//                Shortcut[] sh = keymap.getShortcuts(id);
+//                if (sh.length == 0) continue;
+//                shortcuts.add(sh);
+//            }
             if (menuPath != null || shortcuts.size() > 0)
             {
                 Element microformat = introTopic.createElement("microformat");

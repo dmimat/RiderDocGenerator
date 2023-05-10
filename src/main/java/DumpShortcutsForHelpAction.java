@@ -1,10 +1,7 @@
-
-import com.intellij.codeInspection.LocalInspectionEP;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.actionSystem.ex.ActionManagerEx;
-import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.keymap.ex.KeymapManagerEx;
@@ -15,19 +12,19 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * Created by Dmitry.Matveev on 26-Jan-17.
  */
 public class DumpShortcutsForHelpAction extends AnAction {
 
-    public static final String[] activeKeymapIds = new String[]{
-            "Visual Studio",
-            "$default"
-    };
+//    public static final String[] activeKeymapIds = new String[]{
+//            "Visual Studio",
+//            "$default"
+//    };
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -54,26 +51,30 @@ public class DumpShortcutsForHelpAction extends AnAction {
             descriptionElement.setTextContent(text);
             actionElement.appendChild(descriptionElement);
 
-            for (String keymapId : activeKeymapIds) {
-                Keymap keymap = KeymapManagerEx.getInstanceEx().getKeymap(keymapId);
+            Stream<Keymap> sortedKeymaps = Arrays.stream(KeymapManagerEx.getInstanceEx().getAllKeymaps()).sorted(
+                    (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName())
+            );
+            for (Keymap keymap : sortedKeymaps.toList()) {
                 if(keymap == null)
                     continue;
                 Shortcut[] shortcuts = keymap.getShortcuts(id);
                 if (shortcuts.length == 0) continue;
                 Shortcut shortcut = shortcuts[0];
-                if (shortcut.isKeyboard()) {
+//                if (shortcut.isKeyboard()) {
                     Element shortCutElement = doc.createElement("Shortcut");
                     shortCutElement.setAttribute("layout", keymap.getName());
                     shortCutElement.setTextContent(
-                            StardustUtil.normalizeShortcutKeys(KeymapUtil.getShortcutText(shortcut), keymapId));
+                            KeymapUtil.getShortcutText(shortcut)
+                            //StardustUtil.normalizeShortcutKeys(KeymapUtil.getShortcutText(shortcut), keymap.getName())
+                    );
                     actionElement.appendChild(shortCutElement);
-                }
+//                }
             }
         }
 
         StardustXmlUtil.saveXmlDocumentToFile(doc,StardustUtil.getRiderDocPath() + "\\keymap.xml");
 
-        createKeymaps(activeKeymapIds, registeredActionIds, e.getProject(), actionManager);
+       // createKeymaps(activeKeymapIds, registeredActionIds, e.getProject(), actionManager);
     }
 
     private void createKeymaps(String[] activeKeymapIds, String[] registeredActionIds, Project pjt, ActionManagerEx actionManager) {
