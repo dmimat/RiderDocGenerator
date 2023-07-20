@@ -14,7 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Created by Dmitry.Matveev on 26-Jan-17.
@@ -34,43 +34,62 @@ public class DumpShortcutsForHelpAction extends AnAction {
         Arrays.sort(registeredActionIds);
 
         Document doc = StardustXmlUtil.createXmlDocument();
-        Element rootElement = doc.createElement("Keymap");
-        rootElement.setAttribute("id", "rdr");
+        Element rootElement = doc.createElement("keymap");
+        rootElement.setAttribute("id", "keymap");
         doc.appendChild(rootElement);
+
+        Element layoutsElement = doc.createElement("layouts");
+        List<Keymap> sortedKeymaps = Arrays.stream(KeymapManagerEx.getInstanceEx().getAllKeymaps()).sorted(
+                (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName())
+        ).toList();
+
+        for (Keymap keymap : sortedKeymaps) {
+            if(keymap == null)
+                continue;
+            Element layoutElement = doc.createElement("layout");
+            String keymapName = keymap.getName();
+            layoutElement.setAttribute("name", keymapName);
+            String platform = "PC";
+            if (keymapName.contains("OS"))
+                platform = "MAC";
+            layoutElement.setAttribute("platform", platform);
+            layoutsElement.appendChild(layoutElement);
+        }
+        rootElement.appendChild(layoutsElement);
+        Element actionsElement = doc.createElement("actions");
 
         for (String id : registeredActionIds) {
             AnAction action = actionManager.getAction(id);
             if (action == null) continue;
             String text = action.getTemplatePresentation().getText();
             if (text == null || text.isEmpty()) text = id;
-            Element actionElement = doc.createElement("Action");
+            Element actionElement = doc.createElement("action");
             actionElement.setAttribute("id", id);
-            rootElement.appendChild(actionElement);
+            actionsElement.appendChild(actionElement);
 
-            Element descriptionElement = doc.createElement("Description");
+            Element descriptionElement = doc.createElement("description");
             descriptionElement.setTextContent(text);
             actionElement.appendChild(descriptionElement);
 
-            Stream<Keymap> sortedKeymaps = Arrays.stream(KeymapManagerEx.getInstanceEx().getAllKeymaps()).sorted(
-                    (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName())
-            );
-            for (Keymap keymap : sortedKeymaps.toList()) {
+
+            for (Keymap keymap : sortedKeymaps) {
                 if(keymap == null)
                     continue;
                 Shortcut[] shortcuts = keymap.getShortcuts(id);
                 if (shortcuts.length == 0) continue;
                 Shortcut shortcut = shortcuts[0];
 //                if (shortcut.isKeyboard()) {
-                    Element shortCutElement = doc.createElement("Shortcut");
+                    Element shortCutElement = doc.createElement("shortcut");
                     shortCutElement.setAttribute("layout", keymap.getName());
                     shortCutElement.setTextContent(
-                            KeymapUtil.getShortcutText(shortcut)
-                            //StardustUtil.normalizeShortcutKeys(KeymapUtil.getShortcutText(shortcut), keymap.getName())
+                        //    KeymapUtil.getShortcutText(shortcut)
+                            StardustUtil.normalizeShortcutKeys(KeymapUtil.getShortcutText(shortcut), keymap.getName())
                     );
                     actionElement.appendChild(shortCutElement);
 //                }
             }
         }
+        rootElement.appendChild(actionsElement);
 
         StardustXmlUtil.saveXmlDocumentToFile(doc,StardustUtil.getRiderDocPath() + "\\keymap.xml");
 
@@ -107,7 +126,7 @@ public class DumpShortcutsForHelpAction extends AnAction {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(keymapFile);
             doc.getDocumentElement().normalize();
-            actionNodesFromKeymap = doc.getElementsByTagName("Action");
+            actionNodesFromKeymap = doc.getElementsByTagName("action");
 
         } catch (Exception e) {
             e.printStackTrace();

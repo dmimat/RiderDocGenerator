@@ -1,7 +1,7 @@
 import com.intellij.util.PlatformUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by Dmitry.Matveev on 16-Mar-17.
@@ -25,7 +25,7 @@ public class StardustUtil {
         return s.replaceAll("\\W+", "_");
     }
 
-    public static String normalizeShortcutKeys(String shortcut, String keymap) {
+    public static String normalizeShortcutKeys(String shortcut, String keymapName) {
         String normalized = shortcut;
 
         Map<String, String> replacements = new HashMap<String, String>() {{
@@ -40,7 +40,7 @@ public class StardustUtil {
             put("Button4 Click", "Mouse Back");
             put("Button5 Click", "Mouse Forward");
             put("Back Quote", "'");
-            put(";", "Semicolon");
+            //put(";", "Semicolon");
 //            put("Semicolon", ";");
             put("Equals", "=");
         }};
@@ -48,12 +48,10 @@ public class StardustUtil {
             normalized = normalized.replace(entry.getKey(), entry.getValue());
         }
 
-        if (Objects.equals(keymap, "Visual Studio") ||
-                Objects.equals(keymap, "ReSharper") ||
-                Objects.equals(keymap, "$default")) return normalized;
-
+        if (!keymapName.contains("OS")) return normalized;
 
         Map<String, String> replacementsIos = new HashMap<String, String>() {{
+            put("+", " "); // ⇧
             put("Shift", Character.toString((char) 8679)); // ⇧
             put("Ctrl", Character.toString((char) 8963)); // ⌃
             put("Meta", Character.toString((char) 8984)); // ⌘

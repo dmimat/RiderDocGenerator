@@ -18,7 +18,7 @@ intellij {
 }
 
 runIde {
-    ideDir = file('C://Users/d/AppData/Local/JetBrains/Toolbox/apps/Rider/ch-1/232.5490.32')
+    ideDir = file('C://Users/d/AppData/Local/Programs/Rider 2')
     //ideDir = file('C://Users/d/AppData/Local/JetBrains/Toolbox/apps/datagrip/ch-0/231.8109.78')
     //ideDir = file('C://Users/d/AppData/Local/JetBrains/Toolbox/apps/Goland/ch-0/231.8109.46')
     jvmArgs("-Dkeymap.current.os.only=false")
